@@ -1,4 +1,4 @@
-yeGonesh
+ye*go*nesh
 ==========
 
 a small wrapper around `dmenu` with a sense of history, basically a reimplementation of [yeganesh](http://dmwit.com/yeganesh) except written in [Go](http://golang.org/)
