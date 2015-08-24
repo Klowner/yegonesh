@@ -116,7 +116,6 @@ func readHistory(path string) Commands {
 }
 
 func writeHistory(path string, commands Commands, lastCommand string) {
-	//f, err := os.OpenFile(path, os.O_WRONLY, 0666)
 	f, err := os.Create(path)
 	check(err)
 
@@ -129,7 +128,6 @@ func writeHistory(path string, commands Commands, lastCommand string) {
 			command.Calls += 1
 			lastCommand = ""
 		}
-		//fmt.Fprintf(f, "%d\t%s\n", command.Calls, command.Name)
 		write(command)
 	}
 
@@ -148,7 +146,6 @@ func multiplexMenuStreams(history <- chan string, commands <- chan string) <- ch
 
 	go func() {
 		for cmd := range history {
-			fmt.Println(cmd)
 			seen[cmd] = true
 			out <- cmd
 		}
@@ -177,7 +174,6 @@ func historyNameStream(commands Commands) <- chan string {
 
 func runDmenu(items <- chan string) string {
 	args := dmenuArgs()
-	fmt.Println(args)
 	c := exec.Command("dmenu", args...)
 
 	out := &bytes.Buffer{}
@@ -231,17 +227,11 @@ func getConfigDir() string {
 }
 
 func main() {
-	args := os.Args[1:]
-	configdir := getConfigDir()
 	executables := scanPath(os.Getenv("PATH"))
+	configdir := getConfigDir()
 	historyPath := path.Join(configdir, "history.tsv")
-	history := readHistory(historyPath) //"history.dat")
+	history := readHistory(historyPath)
 
-	for y, x := range history {
-		fmt.Println(y, x.Calls, x.Name)
-	}
-
-	fmt.Println(args)
 	cmd := runDmenu(
 		multiplexMenuStreams(
 			historyNameStream(history),
