@@ -205,9 +205,12 @@ func dmenuArgs() []string {
 }
 
 func launchCommand(command string) {
+	split := strings.SplitN(command, " ", 2)
+	command = split[0]
+	args := split[1:]
 	path, err := exec.LookPath(command)
 	check(err)
-	cmd := exec.Command(path)
+	cmd := exec.Command(path, args...)
 	cmd.Start()
 }
 
@@ -227,6 +230,7 @@ func getConfigDir() string {
 }
 
 func main() {
+	os.Chdir(os.Getenv("HOME"))
 	executables := scanPath(os.Getenv("PATH"))
 	configdir := getConfigDir()
 	historyPath := path.Join(configdir, "history.tsv")
