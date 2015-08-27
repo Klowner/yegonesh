@@ -221,7 +221,7 @@ func getConfigDir() string {
 	if len(home) > 0 {
 		configdir = path.Join(home, "/yegonesh")
 	} else {
-		configdir = "~/.local/config/yegonesh"
+		configdir = path.Join(os.Getenv("HOME"), "/.local/config/yegonesh")
 	}
 
 	os.MkdirAll(configdir, 0700)
