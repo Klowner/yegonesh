@@ -50,7 +50,9 @@ func fetchExecutables(dir string) <- chan string {
 	go func() {
 		files, _ := ioutil.ReadDir(dir)
 		for _, f := range files {
-			out <- f.Name()
+			if f.Mode() & 0111 != 0 {
+				out <- f.Name()
+			}
 		}
 		close(out)
 	}()
