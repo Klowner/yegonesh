@@ -1,23 +1,22 @@
 package main
 
 import (
-	"sync"
-	"bytes"
-	"os"
-	"sort"
-	"os/exec"
-	"strings"
-	"io/ioutil"
 	"bufio"
+	"bytes"
 	"fmt"
-	"strconv"
+	"io/ioutil"
+	"os"
+	"os/exec"
 	"path"
+	"sort"
+	"strconv"
+	"strings"
+	"sync"
 )
 
-
 type Command struct {
-	Name   string
-	Calls  uint64
+	Name  string
+	Calls uint64
 }
 
 type Commands []*Command
@@ -30,13 +29,11 @@ func (s Commands) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
 }
 
-type ByScore struct{Commands}
+type ByScore struct{ Commands }
 
 func (s ByScore) Less(i, j int) bool {
 	return s.Commands[i].Calls < s.Commands[j].Calls
 }
-
-
 
 func check(e error) {
 	if e != nil {
@@ -44,13 +41,13 @@ func check(e error) {
 	}
 }
 
-func fetchExecutables(dir string) <- chan string {
+func fetchExecutables(dir string) <-chan string {
 	out := make(chan string, 1)
 
 	go func() {
 		files, _ := ioutil.ReadDir(dir)
 		for _, f := range files {
-			if f.Mode() & 0111 != 0 {
+			if f.Mode()&0111 != 0 {
 				out <- f.Name()
 			}
 		}
@@ -60,9 +57,8 @@ func fetchExecutables(dir string) <- chan string {
 	return out
 }
 
-
 // get all the items specified by the components of $PATH
-func scanPath(path string) <- chan string {
+func scanPath(path string) <-chan string {
 	var group sync.WaitGroup
 	var commands []string
 
@@ -139,7 +135,7 @@ func writeHistory(path string, commands Commands, lastCommand string) {
 	f.Close()
 }
 
-func multiplexMenuStreams(history <- chan string, commands <- chan string) <- chan string{
+func multiplexMenuStreams(history <-chan string, commands <-chan string) <-chan string {
 	// drain history first while placing items into a map so they can
 	// be omitted from the commands channel
 
@@ -163,7 +159,7 @@ func multiplexMenuStreams(history <- chan string, commands <- chan string) <- ch
 	return out
 }
 
-func historyNameStream(commands Commands) <- chan string {
+func historyNameStream(commands Commands) <-chan string {
 	out := make(chan string)
 	go func() {
 		for _, command := range commands {
@@ -174,7 +170,7 @@ func historyNameStream(commands Commands) <- chan string {
 	return out
 }
 
-func runDmenu(items <- chan string) string {
+func runDmenu(items <-chan string) string {
 	args := dmenuArgs()
 	c := exec.Command("dmenu", args...)
 
@@ -198,7 +194,7 @@ func runDmenu(items <- chan string) string {
 func dmenuArgs() []string {
 	args := os.Args[1:]
 
-	for i, val := range(args) {
+	for i, val := range args {
 		if val == "--" {
 			return args[i+1:]
 		}
@@ -242,9 +238,9 @@ func main() {
 		multiplexMenuStreams(
 			historyNameStream(history),
 			executables),
-		)
+	)
 
-	if len(cmd) > 0  {
+	if len(cmd) > 0 {
 		// launch the requested process
 		launchCommand(cmd)
 
