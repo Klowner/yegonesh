@@ -1,1 +1,5 @@
-langauge: go
+language: go
+
+go:
+    - 1.3
+    - tip
