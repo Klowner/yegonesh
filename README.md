@@ -1,4 +1,4 @@
-ye*go*nesh
+ye*go*nesh [![Build Status](https://travis-ci.org/Klowner/node-binpacker.svg?branch=master)](https://travis-ci.org/Klowner/node-binpacker)
 ==========
 
 a small wrapper around `dmenu` with a sense of history, basically a reimplementation of [yeganesh](http://dmwit.com/yeganesh) except written in [Go](http://golang.org/)
