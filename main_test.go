@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"reflect"
 	"sort"
 	"strings"
@@ -211,8 +212,9 @@ func TestGetConfigDir(t *testing.T) {
 func TestLaunchCommand(t *testing.T) {
 	name := "echo 'hello, world'"
 	cmd := launchCommand(name)
+	path, _ := exec.LookPath("echo")
 
-	expected := []string{"/usr/bin/echo", "'hello, world'"}
+	expected := []string{path, "'hello, world'"}
 	result := cmd.Args
 
 	if !reflect.DeepEqual(result, expected) {
