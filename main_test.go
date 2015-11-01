@@ -7,6 +7,7 @@ import (
 	"os"
 	"reflect"
 	"sort"
+	"strings"
 	"testing"
 )
 
@@ -171,4 +172,58 @@ func TestHistoryNameStream(t *testing.T) {
 			t.Errorf("Expected executable %v, got %v", c.Name, name)
 		}
 	}
+}
+
+func TestDMenuArgs(t *testing.T) {
+	os.Args = []string{"yegonesh"}
+	result := dmenuArgs()
+
+	if len(result) != 0 {
+		t.Errorf("Expected arguments list to be empty got %v", result)
+	}
+
+	os.Args = strings.Split("yegonesh -- -b -fn '-xos4-terminus-medium-r-*-*-20-*'", " ")
+	expected := []string{"-b", "-fn", "'-xos4-terminus-medium-r-*-*-20-*'"}
+	result = dmenuArgs()
+
+	if !reflect.DeepEqual(result, expected) {
+		t.Errorf("Expected arguments list to be %v, got %v", expected, result)
+	}
+}
+
+func TestGetConfigDir(t *testing.T) {
+	os.Setenv("XDG_CONFIG_HOME", "/tmp")
+	expected := "/tmp/yegonesh"
+	result := getConfigDir()
+	if result != expected {
+		t.Errorf("Expected config dir to be %v, got %v", expected, result)
+	}
+
+	os.Setenv("XDG_CONFIG_HOME", "")
+	os.Setenv("HOME", "/tmp")
+	expected = "/tmp/.local/config/yegonesh"
+	result = getConfigDir()
+	if result != expected {
+		t.Errorf("Expected config dir to be %v, got %v", expected, result)
+	}
+}
+
+func TestLaunchCommand(t *testing.T) {
+	name := "echo 'hello, world'"
+	cmd := launchCommand(name)
+
+	expected := []string{"/usr/bin/echo", "'hello, world'"}
+	result := cmd.Args
+
+	if !reflect.DeepEqual(result, expected) {
+		t.Errorf("Expected arguments list to be %v, got %v", expected, result)
+	}
+
+	name = "bogus_cmd"
+	defer func() {
+		if r := recover(); r == nil {
+			t.Error("Expected bogus command to have panicked")
+		}
+	}()
+	launchCommand(name)
 }
