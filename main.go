@@ -202,7 +202,7 @@ func dmenuArgs() []string {
 	return nil
 }
 
-func launchCommand(command string) {
+func launchCommand(command string) *exec.Cmd {
 	split := strings.SplitN(command, " ", 2)
 	command = split[0]
 	args := split[1:]
@@ -210,6 +210,7 @@ func launchCommand(command string) {
 	check(err)
 	cmd := exec.Command(path, args...)
 	cmd.Start()
+	return cmd
 }
 
 func getConfigDir() string {
